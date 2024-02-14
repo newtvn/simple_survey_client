@@ -1,33 +1,21 @@
 <?php
-$servername = "localhost"; 
-$username = "root";
-$password = "8520";
-$dbname = "sky_database"; 
+// connect.php
+$host = 'localhost';
+$db = 'sky_server_database';
+$user = 'root';
+$pass = '8520';
+$charset = 'utf8mb4';
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
-
-// Insert data into the database
-$user = $_POST['username'];
-$pass = $_POST['password']; // You should hash passwords before storing them!
-
-$sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-
-// Prepare and bind
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $user, $pass);
-
-if ($stmt->execute()) {
-    echo "New record created successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-$stmt->close();
-$conn->close();
 ?>

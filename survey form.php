@@ -96,14 +96,17 @@
                     <div class="form-group">
                         <label>What is your gender? <span class="required">*</span></label>
                         <div class="options">
-                            <input type="radio" id="male" name="gender" value="MALE" required>
-                            <label for="male">Male</label>
+                        <label for="male">Male</label>
+                         <input type="radio" id="male" name="gender" value="MALE" required>
                             
-                            <input type="radio" id="female" name="gender" value="FEMALE">
-                            <label for="female">Female</label>
                             
-                            <input type="radio" id="other" name="gender" value="OTHER">
-                            <label for="other">Other</label>
+                         <label for="female">Female</label>
+                          <input type="radio" id="female" name="gender" value="FEMALE">
+                            
+                            
+                          <label for="other">prefer not to say</label>
+                           <input type="radio" id="other" name="gender" value="OTHER">
+                            
                         </div>
                     </div>
       
