@@ -10,7 +10,7 @@
          include 'connect.php';
 
         $host = 'localhost';
-        $db = 'sky_server_db';
+        $db = 'sky_servey_db';
         $user = 'root';
         $pass = '8520';
         $charset = 'utf8mb4';
@@ -22,15 +22,15 @@
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
-        try {
-            $pdo = new PDO($dsn, $user, $pass, $options);
-        } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
-        }
+        // try {
+        //     $pdo = new PDO($dsn, $user, $pass, $options);}
+        // // } catch (\PDOException $e) {
+        //     throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        // }
 
         // Query to fetch survey responses
         
-        $stmt = $pdo->query('SELECT full_name, email_address, description, gender, programming_stack, certificates, date_responded FROM your_table_name');
+        $stmt = $pdo->query('SELECT full_name, email_address, description, gender, programming_stack, certificates, date_responded FROM ');
 
         while ($row = $stmt->fetch()) {
             echo "<p><strong>Full Name:</strong> " . htmlspecialchars($row['full_name']) . "</p>";
@@ -92,3 +92,4 @@
 
 </head>
 </html>
+<?php

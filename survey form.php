@@ -4,63 +4,92 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Survey Form</title>
-  
+
   <style>
     body {
-      background-color: #800000; 
-      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #4d3319 0%, #1a1a00 100%); 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
     }
     .container {
       width: 80%;
       margin: auto;
       background-color: #f7f7f7; 
       padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); 
+      color: #333;
+      transform: translateY(10%);
     }
     h1 {
       text-align: center; 
-      color: #333; 
+      color: #5c3c00; 
     }
     .form-group {
-      margin-bottom: 15px; 
+      margin-bottom: 20px; 
     }
     label {
       display: block;
       margin-bottom: 5px;
+      color: #5c3c00;
     }
     input[type="text"],
     input[type="email"],
     textarea,
     input[type="file"] {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 5px;
-      border: 1px solid #ddd; 
+      border: 1px solid #ccc; 
+      box-sizing: border-box;
     }
     .options label {
-      margin-right: 10px; 
+      margin-right: 20px; 
+      cursor: pointer;
     }
     .options input[type="radio"],
     .options input[type="checkbox"] {
+      display: none;
+    }
+    .options label:before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #5c3c00;
       margin-right: 5px;
+      vertical-align: -6px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .options input[type="radio"]:checked + label:before {
+      background-color: #5c3c00;
+    }
+    .options input[type="checkbox"]:checked + label:before {
+      background-color: #5c3c00;
+      border-color: #5c3c00;
     }
     .multiple {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
+    .multiple label:before {
+      border-radius: 5px;
+    }
     button {
-      padding: 10px 20px;
-      background-color: #5cb85c;
+      padding: 12px 25px;
+      background-color: #5c3c00;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
+      transition: background-color 0.2s;
     }
     button:hover {
-      background-color: #4cae4c; 
+      background-color: #4e3200; 
     }
     .required {
       color: red;
@@ -96,8 +125,9 @@
                     <div class="form-group">
                         <label>What is your gender? <span class="required">*</span></label>
                         <div class="options">
+
                         <label for="male">Male</label>
-                         <input type="radio" id="male" name="gender" value="MALE" required>
+                         <input type="radio" id="male" name="gender" value="MALE">
                             
                             
                          <label for="female">Female</label>

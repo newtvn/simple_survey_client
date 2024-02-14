@@ -1,7 +1,7 @@
 <?php
 // connect.php
 $host = 'localhost';
-$db = 'sky_server_database';
+$db = 'sky_survey_db'; 
 $user = 'root';
 $pass = '8520';
 $charset = 'utf8mb4';
