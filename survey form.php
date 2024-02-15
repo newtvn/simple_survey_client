@@ -140,46 +140,47 @@
                         </div>
                     </div>
       
-                    <div class="form-group">
-                        <label>What programming stack are you familiar with? <span class="required">*</span></label>
-                        <div class="options multiple"><br>
-                            <!-- options -->
-                            <input type="checkbox" id="react" name="programming_stack" value="REACT">
-                            <label for="react">React JS</label><br>
-            
-                            <input type="checkbox" id="ANGULAR" name="programming_stack" value="ANGULAR">
-                            <label for="ANGULAR">ANGULAR JS</label><br>
-            
-                            <input type="checkbox" id="VUE" name="programming_stack" value="VUE">
-                            <label for="VUE">VUE</label><br>
-            
-                            <input type="checkbox" id="SQL" name="programming_stack" value="SQL">
-                            <label for="SQL">SQL</label><br>
-            
-                            <input type="checkbox" id="MSSQL" name="programming_stack" value="MSSQL">
-                            <label for="MSSQL">MSSQL</label><br>
-            
-                            <input type="checkbox" id="react" name="programming_stack" value="POSTGRE">
-                            <label for="POSTGRE">POSTGRE</label><br>
-            
-                            <input type="checkbox" id="MYSQL" name="programming_stack" value="MYSQL">
-                            <label for="MYSQL">MYSQL</label><br>
-            
-                            <input type="checkbox" id="JAVA" name="programming_stack" value="JAVA">
-                            <label for="JAVA">JAVA</label><br>
-            
-                            <input type="checkbox" id="PHP" name="programming_stack" value="PHP">
-                            <label for="PHP">PHP</label><br>
-            
-                            <input type="checkbox" id="GO" name="programming_stack" value="GO">
-                            <label for="GO">GO</label><br>
-            
-                            <input type="checkbox" id="RUST" name="programming_stack" value="RUST">
-                            <label for="RUST">RUST</label><br><br>
-            
-                            <!-- end of ooptions... -->
-                        </div>
-                    </div>
+                    <!-- ... other form fields ... -->
+
+<div class="form-group">
+    <label>What programming stack are you familiar with? <span class="required">*</span></label>
+    <div class="options multiple"><br>
+        <input type="checkbox" id="react" name="programming_stack[]" value="REACT">
+        <label for="react">React JS</label><br>
+        
+        <input type="checkbox" id="angular" name="programming_stack[]" value="ANGULAR">
+        <label for="angular">Angular JS</label><br>
+        
+        <input type="checkbox" id="vue" name="programming_stack[]" value="VUE">
+        <label for="vue">Vue</label><br>
+        
+        <input type="checkbox" id="sql" name="programming_stack[]" value="SQL">
+        <label for="sql">SQL</label><br>
+        
+        <input type="checkbox" id="mssql" name="programming_stack[]" value="MSSQL">
+        <label for="mssql">Microsoft SQL Server</label><br>
+        
+        <input type="checkbox" id="postgres" name="programming_stack[]" value="POSTGRE">
+        <label for="postgres">PostgreSQL</label><br>
+        
+        <input type="checkbox" id="mysql" name="programming_stack[]" value="MYSQL">
+        <label for="mysql">MySQL</label><br>
+        
+        <input type="checkbox" id="java" name="programming_stack[]" value="JAVA">
+        <label for="java">Java</label><br>
+        
+        <input type="checkbox" id="php" name="programming_stack[]" value="PHP">
+        <label for="php">PHP</label><br>
+        
+        <input type="checkbox" id="go" name="programming_stack[]" value="GO">
+        <label for="go">Go</label><br>
+        
+        <input type="checkbox" id="rust" name="programming_stack[]" value="RUST">
+        <label for="rust">Rust</label><br><br>
+    </div>
+</div>
+
+
                     
                     <div class="form-group">
                         <label for="certificates">Upload any of your certificates?(<small>You can upload multiple files, preferably(.pdf)</small>) <span class="required">*</span></label>
@@ -189,52 +190,66 @@
 
       <button type="submit">Submit</button>
     </form>
+
     <?php
-    ?>
+include 'connect.php';
+
+$uploadDir = __DIR__ . '/path/to/uploads/'; // Adjust '/path/to/uploads/' to your desired path
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0777, true); // Creates the directory with read/write permissions
+}
 
 
-<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Sanitize and assign input data
     $fullName = htmlspecialchars($_POST['full_name']);
     $emailAddress = htmlspecialchars($_POST['email_address']);
     $description = htmlspecialchars($_POST['description']);
     $gender = htmlspecialchars($_POST['gender']);
-    // Correct handling of checkboxes as an array
-    $programmingStack = isset($_POST['programming_stack']) ? $_POST['programming_stack'] : [];
-    
-    // Handle file upload
-    if (isset($_FILES['certificates']['name']) && is_array($_FILES['certificates']['name'])) {
-        // Loop through each file
-        foreach ($_FILES['certificates']['name'] as $i => $name) {
-            if ($_FILES['certificates']['error'][$i] === UPLOAD_ERR_OK) {
-                $tmp_name = $_FILES['certificates']['tmp_name'][$i];
-                // Update the path to the directory where you want to save the files
-                $uploadDir = "/path/to/uploads/"; // Make sure this directory exists and is writable
-                $destination = $uploadDir . basename($name);
-                move_uploaded_file($tmp_name, $destination);
-                // Output success for each uploaded file
-                echo "<p>Uploaded $name successfully.</p>";
-            } else {
-                // Handle file upload errors here
-                switch ($_FILES['certificates']['error'][$i]) {
-                    case UPLOAD_ERR_INI_SIZE:
-                    case UPLOAD_ERR_FORM_SIZE:
-                        echo "<p>Error: File $name is too large.</p>";
-                        break;
-                    case UPLOAD_ERR_NO_FILE:
-                        echo "<p>Error: No file sent.</p>";
-                        break;
-                    // ... Handle other errors
-                    default:
-                        echo "<p>An error occurred while uploading $name.</p>";
-                        break;
+    // Ensure $programmingStack is always treated as an array
+    $programmingStack = isset($_POST['programming_stack']) ? (array)$_POST['programming_stack'] : [];
+    $programmingStackString = implode(',', $programmingStack);
+
+    // Initialize variables for file uploads
+    $uploadedFiles = [];
+    $uploadDir = "path/to/uploads/"; // Adjust accordingly
+
+    // Check if any file is uploaded by ensuring $_FILES['certificates'] is set and not empty
+    if (isset($_FILES['certificates']['name']) && !empty($_FILES['certificates']['name'])) {
+        // Normalize the file structure when dealing with a single file to mimic multiple files format
+        $fileCount = is_array($_FILES['certificates']['name']) ? count($_FILES['certificates']['name']) : 1;
+        $fileNames = is_array($_FILES['certificates']['name']) ? $_FILES['certificates']['name'] : array($_FILES['certificates']['name']);
+        $tmpNames = is_array($_FILES['certificates']['tmp_name']) ? $_FILES['certificates']['tmp_name'] : array($_FILES['certificates']['tmp_name']);
+        $errorCodes = is_array($_FILES['certificates']['error']) ? $_FILES['certificates']['error'] : array($_FILES['certificates']['error']);
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($errorCodes[$i] === UPLOAD_ERR_OK) {
+                // Perform your file validation and upload logic here
+                $tmp_name = $tmpNames[$i];
+                $name = basename($fileNames[$i]);
+                $destination = $uploadDir . $name;
+                if (move_uploaded_file($tmp_name, $destination)) {
+                    $uploadedFiles[] = $name; // Collect uploaded file names
+                } else {
+                    echo "<p>Error: Could not upload file $name.</p>";
                 }
+            } else {
+                echo "<p>Error: Upload error for file.</p>";
             }
         }
+
+        $uploadedFilesString = implode(',', $uploadedFiles);
     }
-} else {
+
+    // Database insertion
+    if (!empty($uploadedFiles)) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO survey_responses (full_name, email_address, description, gender, programming_stack, certificates, date_responded) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt->execute([$fullName, $emailAddress, $description, $gender, $programmingStackString, $uploadedFilesString]);
+            echo "<p>Survey response has been recorded.</p>";
+        } catch (PDOException $e) {
+            echo "Database error: " . $e->getMessage();
+        }
+    }
 }
 ?>
-  </div>
-</body>
-</html>
