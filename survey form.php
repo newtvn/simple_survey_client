@@ -189,6 +189,8 @@
                     </div>
 
       <button type="submit">Submit</button>
+      <button href="survey responses.php" class="btn">View Responses</button>
+
     </form>
 
     <?php
