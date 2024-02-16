@@ -1,8 +1,5 @@
 <?php
-// Include the database connection file. Ensure that 'connect.php' contains the correct PDO connection code.
 include 'connect.php';
-
-
 // Query to fetch survey responses from the 'respondent' table
 try {
     $stmt = $pdo->query('SELECT full_name, email_address, description, gender, programming_stack, certificates, date_responded FROM survey_responses');
@@ -18,7 +15,6 @@ try {
     echo "An error occurred: " . $e->getMessage();
     exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +61,7 @@ try {
 
     tr:hover {
         background-color:#5C4033;
+        color: #FF0000;
     }
 
     /* Improves table responsiveness without forcing it to a specific viewport width */
@@ -125,24 +122,25 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($responses as $row): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['email_address']); ?></td>
-                        <td><?php echo htmlspecialchars($row['description']); ?></td>
-                        <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                        <td><?php echo htmlspecialchars($row['programming_stack']); ?></td>
-                        <td>
-                            <?php if (!empty($row['certificates'])): ?>
-                                <?php foreach (explode(',', $row['certificates']) as $certificate): ?>
-                                    <?php echo htmlspecialchars($certificate) . "<br>"; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($row['date_responded']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+    <?php foreach ($responses as $row): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+            <td><?php echo htmlspecialchars($row['email_address']); ?></td>
+            <td><?php echo htmlspecialchars($row['description']); ?></td>
+            <td><?php echo htmlspecialchars($row['gender']); ?></td>
+            <td><?php echo htmlspecialchars($row['programming_stack']); ?></td>
+            <td>
+                <?php if (!empty($row['certificates'])): ?>
+                    <?php foreach (explode(',', $row['certificates']) as $certificate): ?>
+                        <a href="certificates/<?php echo htmlspecialchars($certificate); ?>" download><?php echo htmlspecialchars($certificate); ?></a><br>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </td>
+            <td><?php echo htmlspecialchars($row['date_responded']); ?></td>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
+
         </table>
     </div>
     <script src="js/script.js"></script>

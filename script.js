@@ -50,3 +50,25 @@ function filterRecords() {
         }
     }
 }
+
+function filterRecords() {
+    var input, filter, table, tr, i, tdEmail, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.querySelector(".responsive-table");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those that don't match the search query
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        tdEmail = tr[i].getElementsByTagName("td")[1]; // Assuming email_address is the second column
+        if (tdEmail) {
+            txtValue = tdEmail.textContent || tdEmail.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+

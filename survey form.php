@@ -89,16 +89,101 @@
       transition: background-color 0.2s;
     }
     button:hover {
-      background-color: #4e3200; 
+      background-color:#1D0200;
     }
     .required {
       color: red;
     }
-  </style>
 
+    .btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #5c3c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none; /* Removes underline from links */
+    text-align: center;
+}
 
+.btn:hover {
+    background-color: #1D0200;
+}
+</style>
 </head>
 <body>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], textarea');
+
+    inputs.forEach((input, index) => {
+        function checkInput() {
+            // Check if the current input has a value
+            if (input.value.trim() !== '') {
+                // Enable the next input if there is one
+                if (index + 1 < inputs.length) {
+                    inputs[index + 1].disabled = false;
+                }
+            } else {
+                // If current input is empty, disable all next inputs
+                for (let j = index + 1; j < inputs.length; j++) {
+                    inputs[j].disabled = true;
+                }
+            }
+        }
+
+        // Initially disable all inputs except the first
+        if (index > 0) input.disabled = true;
+
+        // Attach the checkInput function to the 'input' event
+        input.addEventListener('input', checkInput);
+    });
+});
+
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Initialize an empty array to collect errors
+    $errors = [];
+
+    // Check if the 'email_address' key is present and not empty
+    if (empty($_POST['email_address'])) {
+        $errors['email_address'] = "Email address is required.";
+    } else {
+        $emailAddress = htmlspecialchars($_POST['email_address']);
+        // Perform email validation checks here...
+    }
+
+    // Check if the 'description' key is present and not empty
+    if (empty($_POST['description'])) {
+        $errors['description'] = "Description is required.";
+    } else {
+        $description = htmlspecialchars($_POST['description']);
+    }
+
+    // Check if the 'gender' key is present and not empty
+    if (empty($_POST['gender'])) {
+        $errors['gender'] = "Gender selection is required.";
+    } else {
+        $gender = htmlspecialchars($_POST['gender']);
+    }
+
+    // Proceed only if there are no errors
+    if (empty($errors)) {
+        // Existing code for handling form submission...
+    } else {
+        // Display errors to the user
+        foreach ($errors as $error) {
+            echo "<p>Error: $error</p>";
+        }
+    }
+}
+
+
+</script>
+
   <div class="container">
   
   
@@ -189,25 +274,36 @@
                     </div>
 
       <button type="submit">Submit</button>
-      <button href="survey responses.php" class="btn">View Responses</button>
+     <a href="survey responses.php" class="btn">View Responses</a>
+
 
     </form>
 
     <?php
 include 'connect.php';
 
-$uploadDir = __DIR__ . '/path/to/uploads/'; // Adjust '/path/to/uploads/' to your desired path
+$uploadDir = __DIR__ . '/path/to/uploads/'; 
 if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true); // Creates the directory with read/write permissions
+    mkdir($uploadDir, 0777, true); 
 }
 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") 
     // Sanitize and assign input data
     $fullName = htmlspecialchars($_POST['full_name']);
     $emailAddress = htmlspecialchars($_POST['email_address']);
     $description = htmlspecialchars($_POST['description']);
     $gender = htmlspecialchars($_POST['gender']);
+
+    if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+      echo "<p>Error: Invalid email format.</p>";
+  } else if (!preg_match("/@gmail\.com$/", $emailAddress)) {
+      echo "<p>Error: Email must be a Gmail address (example@gmail.com).</p>";
+  } else {
+      // The email address passed both checks, proceed with the rest of the script
+      
+      // Existing code for handling form submission...
+  
     // Ensure $programmingStack is always treated as an array
     $programmingStack = isset($_POST['programming_stack']) ? (array)$_POST['programming_stack'] : [];
     $programmingStackString = implode(',', $programmingStack);
@@ -217,6 +313,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $uploadDir = "path/to/uploads/"; // Adjust accordingly
 
     // Check if any file is uploaded by ensuring $_FILES['certificates'] is set and not empty
+
     if (isset($_FILES['certificates']['name']) && !empty($_FILES['certificates']['name'])) {
         // Normalize the file structure when dealing with a single file to mimic multiple files format
         $fileCount = is_array($_FILES['certificates']['name']) ? count($_FILES['certificates']['name']) : 1;

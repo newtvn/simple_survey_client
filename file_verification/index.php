@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add the link to Font Awesome CSS at the head of your HTML -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+<!-- ... rest of your HTML ... -->
+
+<!-- Update the button in your HTML form -->
+<button type="submit"><i class="fa fa-upload"></i>Upload CSV</button>
+
+<!-- ... rest of your HTML ... -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Validation Application</title>
