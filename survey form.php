@@ -111,77 +111,41 @@
 .btn:hover {
     background-color: #1D0200;
 }
-</style>
+
+  </style>
+
+
 </head>
 <body>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], textarea');
+    const emailInput = document.querySelector('input[type="email"]');
+    const otherInputs = document.querySelectorAll('input:not([type="email"]), textarea');
 
-    inputs.forEach((input, index) => {
-        function checkInput() {
-            // Check if the current input has a value
-            if (input.value.trim() !== '') {
-                // Enable the next input if there is one
-                if (index + 1 < inputs.length) {
-                    inputs[index + 1].disabled = false;
-                }
-            } else {
-                // If current input is empty, disable all next inputs
-                for (let j = index + 1; j < inputs.length; j++) {
-                    inputs[j].disabled = true;
-                }
-            }
+    // Function to check email format
+    function checkEmailFormat() {
+        const emailRegex = /^[^@]+@gmail\.com$/;
+        if (!emailRegex.test(emailInput.value.trim())) {
+            // If the email format is incorrect, disable all other inputs and apply red underline
+            otherInputs.forEach(input => input.disabled = true);
+            emailInput.style.borderBottom = '2px solid red';
+        } else {
+            // If the email format is correct, enable all other inputs and remove red underline
+            otherInputs.forEach(input => input.disabled = false);
+            emailInput.style.borderBottom = '';
         }
+    }
 
-        // Initially disable all inputs except the first
-        if (index > 0) input.disabled = true;
+    // Attach event listener for real-time email format check
+    emailInput.addEventListener('input', checkEmailFormat);
 
-        // Attach the checkInput function to the 'input' event
-        input.addEventListener('input', checkInput);
-    });
+    // Initially disable all inputs except the email
+    otherInputs.forEach(input => input.disabled = true);
+    emailInput.style.borderBottom = ''; // Ensure no red underline initially
+
+    // Call the email format check function on page load in case the field is pre-filled or autocompleted
+    checkEmailFormat();
 });
-
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Initialize an empty array to collect errors
-    $errors = [];
-
-    // Check if the 'email_address' key is present and not empty
-    if (empty($_POST['email_address'])) {
-        $errors['email_address'] = "Email address is required.";
-    } else {
-        $emailAddress = htmlspecialchars($_POST['email_address']);
-        // Perform email validation checks here...
-    }
-
-    // Check if the 'description' key is present and not empty
-    if (empty($_POST['description'])) {
-        $errors['description'] = "Description is required.";
-    } else {
-        $description = htmlspecialchars($_POST['description']);
-    }
-
-    // Check if the 'gender' key is present and not empty
-    if (empty($_POST['gender'])) {
-        $errors['gender'] = "Gender selection is required.";
-    } else {
-        $gender = htmlspecialchars($_POST['gender']);
-    }
-
-    // Proceed only if there are no errors
-    if (empty($errors)) {
-        // Existing code for handling form submission...
-    } else {
-        // Display errors to the user
-        foreach ($errors as $error) {
-            echo "<p>Error: $error</p>";
-        }
-    }
-}
-
-
 </script>
 
   <div class="container">
@@ -225,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
       
-                    <!-- ... other form fields ... -->
+                   
 
 <div class="form-group">
     <label>What programming stack are you familiar with? <span class="required">*</span></label>
@@ -287,22 +251,29 @@ if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0777, true); 
 }
 
+$fullName = htmlspecialchars($_POST['full_name'] ?? ''); 
+$emailAddress = htmlspecialchars($_POST['email_address'] ?? '');
+$description = htmlspecialchars($_POST['description'] ?? '');
+$gender = htmlspecialchars($_POST['gender'] ?? '');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") 
-    // Sanitize and assign input data
-    $fullName = htmlspecialchars($_POST['full_name']);
-    $emailAddress = htmlspecialchars($_POST['email_address']);
-    $description = htmlspecialchars($_POST['description']);
-    $gender = htmlspecialchars($_POST['gender']);
 
-    if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $emailAddress = isset($_POST['email_address']) ? trim($_POST['email_address']) : '';
+
+  // First, validate the email address format
+  if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
       echo "<p>Error: Invalid email format.</p>";
-  } else if (!preg_match("/@gmail\.com$/", $emailAddress)) {
+  } 
+  // Then, ensure it's a Gmail address
+  else if (!preg_match("/@gmail\.com$/", $emailAddress)) {
       echo "<p>Error: Email must be a Gmail address (example@gmail.com).</p>";
-  } else {
+  
       // The email address passed both checks, proceed with the rest of the script
       
       // Existing code for handling form submission...
+
+      
   
     // Ensure $programmingStack is always treated as an array
     $programmingStack = isset($_POST['programming_stack']) ? (array)$_POST['programming_stack'] : [];
@@ -350,5 +321,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             echo "Database error: " . $e->getMessage();
         }
     }
+  }
 }
 ?>

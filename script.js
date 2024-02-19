@@ -51,6 +51,7 @@ function filterRecords() {
     }
 }
 
+
 function filterRecords() {
     var input, filter, table, tr, i, tdEmail, txtValue;
     input = document.getElementById("searchInput");
