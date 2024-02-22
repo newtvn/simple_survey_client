@@ -56,7 +56,29 @@ try {
     }
     </script>
     
-    
+    <?php
+include 'connect.php';
+
+$recordsPerPage = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $recordsPerPage;
+
+try {
+    $totalRows = $pdo->query('SELECT COUNT(*) FROM survey_responses')->fetchColumn();
+    $totalPages = ceil($totalRows / $recordsPerPage);
+
+    $stmt = $pdo->prepare('SELECT full_name, email_address, description, gender, programming_stack, certificates, date_responded FROM survey_responses LIMIT :limit OFFSET :offset');
+    $stmt->bindParam(':limit', $recordsPerPage, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $responses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (\PDOException $e) {
+    echo "An error occurred: " . $e->getMessage();
+    exit;
+}
+
+?>
     
     
     <!DOCTYPE html>
@@ -214,6 +236,7 @@ try {
     
             </table>
             </table>
+            
         </div>
         <script src="js/script.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
