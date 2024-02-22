@@ -26,44 +26,22 @@ function downloadcertificates() {
     /api/questions/responses/certificates/{id} 
 }
 
+// // JavaScript to select a row with a specific id
+var row = document.getElementById("record_1"); 
+
+
 function filterRecords() {
     var input, filter, table, tr, td, i, txtValue;
     input = document.getElementById("searchInput");
     filter = input.value.toUpperCase();
-    table = document.querySelector(".responsive-table");
+    table = document.getElementById("responsesTable");
     tr = table.getElementsByTagName("tr");
 
-    // Loop through all table rows, and hide those that don't match the search query
-    for (i = 0; i < tr.length; i++) {
-        // Loop through all table columns
-        td = tr[i].getElementsByTagName("td");
-        for (var j = 0; j < td.length; j++) {
-            if (td[j]) {
-                txtValue = td[j].textContent || td[j].innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                    break; // Stop the loop if found and display the row
-                } else {
-                    tr[i].style.display = "none"; // Hide the row if not found
-                }
-            }       
-        }
-    }
-}
-
-
-function filterRecords() {
-    var input, filter, table, tr, i, tdEmail, txtValue;
-    input = document.getElementById("searchInput");
-    filter = input.value.toUpperCase();
-    table = document.querySelector(".responsive-table");
-    tr = table.getElementsByTagName("tr");
-
-    // Loop through all table rows, and hide those that don't match the search query
-    for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
-        tdEmail = tr[i].getElementsByTagName("td")[1]; // Assuming email_address is the second column
-        if (tdEmail) {
-            txtValue = tdEmail.textContent || tdEmail.innerText;
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1]; // Assuming the second `td` is the email address
+        if (td) {
+            txtValue = td.textContent || td.innerText;
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
                 tr[i].style.display = "";
             } else {

@@ -3,7 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
   <title>Survey Form</title>
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">THANK YOU FOR PARTICIPATING IN THIS SURVEY, KINDLY FILL IN YOUR DETAILS IN THE FORM BELOW</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        
+      </ul>
+      <form class="d-flex" role="search">
+      <button>
+          <a class="nav-link active" aria-current="page" href="http://localhost/simple_survey_client/survey%20responses.php">Responses</a>
+          </button>
+      </form>
+    </div>
+  </div>
+</nav>
 
   <style>
     body {
@@ -148,14 +169,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
   <div class="container">
   
   
 
   <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
+
       <center><h1>Questionnaire</h1></center><br>
-     
-      <form action="/submit-form" method="POST">
+    
                     <div class="form-group">
                         <label for="full_name">What is your full name? <span class="required">*</span></label><br>
                         <input type="text" id="full_name" name="full_name" placeholder="[Surname] [First Name] [Other Names]" required>
@@ -172,22 +194,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     
                     <div class="form-group">
-                        <label>What is your gender? <span class="required">*</span></label>
-                        <div class="options">
+    <label>What is your gender? <span class="required">*</span></label>
+    <div class="options">
+        <input type="radio" id="male" name="gender" value="MALE">
+        <label for="male">Male</label><br>
 
-                        <label for="male">Male</label>
-                         <input type="radio" id="male" name="gender" value="MALE">
-                            
-                            
-                         <label for="female">Female</label>
-                          <input type="radio" id="female" name="gender" value="FEMALE">
-                            
-                            
-                          <label for="other">prefer not to say</label>
-                           <input type="radio" id="other" name="gender" value="OTHER">
-                            
-                        </div>
-                    </div>
+        <input type="radio" id="female" name="gender" value="FEMALE">
+        <label for="female">Female</label><br>
+
+        <input type="radio" id="other" name="gender" value="OTHER">
+        <label for="other">Prefer not to say</label><br>
+    </div>
+</div>
+
       
                    
 
@@ -246,81 +265,69 @@ document.addEventListener('DOMContentLoaded', function () {
     <?php
 include 'connect.php';
 
-$uploadDir = __DIR__ . '/path/to/uploads/'; 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+$uploadDir = __DIR__ . '/path/to/uploads/';
 if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true); 
+    mkdir($uploadDir, 0777, true);
 }
 
-$fullName = htmlspecialchars($_POST['full_name'] ?? ''); 
-$emailAddress = htmlspecialchars($_POST['email_address'] ?? '');
-$description = htmlspecialchars($_POST['description'] ?? '');
-$gender = htmlspecialchars($_POST['gender'] ?? '');
+$fullName = isset($_POST['full_name']) ? htmlspecialchars($_POST['full_name']) : '';
+$emailAddress = isset($_POST['email_address']) ? htmlspecialchars($_POST['email_address']) : '';
+$description = isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '';
+$gender = isset($_POST['gender']) ? htmlspecialchars($_POST['gender']) : '';
 
+$programmingStack = isset($_POST['programming_stack']) ? $_POST['programming_stack'] : [];
+$programmingStackString = implode(',', $programmingStack);
 
+$uploadedFiles = [];
+$uploadedFilesString = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $emailAddress = isset($_POST['email_address']) ? trim($_POST['email_address']) : '';
+    // First, validate the email address format
+    if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+        echo "<p>Error: Invalid email format.</p>";
+    } else if (!preg_match("/@gmail\.com$/", $emailAddress)) {
+        echo "<p>Error: Email must be a Gmail address (example@gmail.com).</p>";
+    } else {
+        // File upload handling
+        if (isset($_FILES['certificates']['name']) && !empty($_FILES['certificates']['name'])) {
+            $fileCount = is_array($_FILES['certificates']['name']) ? count($_FILES['certificates']['name']) : 1;
+            $fileNames = is_array($_FILES['certificates']['name']) ? $_FILES['certificates']['name'] : array($_FILES['certificates']['name']);
+            $tmpNames = is_array($_FILES['certificates']['tmp_name']) ? $_FILES['certificates']['tmp_name'] : array($_FILES['certificates']['tmp_name']);
+            $errorCodes = is_array($_FILES['certificates']['error']) ? $_FILES['certificates']['error'] : array($_FILES['certificates']['error']);
 
-  // First, validate the email address format
-  if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
-      echo "<p>Error: Invalid email format.</p>";
-  } 
-  // Then, ensure it's a Gmail address
-  else if (!preg_match("/@gmail\.com$/", $emailAddress)) {
-      echo "<p>Error: Email must be a Gmail address (example@gmail.com).</p>";
-  
-      // The email address passed both checks, proceed with the rest of the script
-      
-      // Existing code for handling form submission...
-
-      
-  
-    // Ensure $programmingStack is always treated as an array
-    $programmingStack = isset($_POST['programming_stack']) ? (array)$_POST['programming_stack'] : [];
-    $programmingStackString = implode(',', $programmingStack);
-
-    // Initialize variables for file uploads
-    $uploadedFiles = [];
-    $uploadDir = "path/to/uploads/"; // Adjust accordingly
-
-    // Check if any file is uploaded by ensuring $_FILES['certificates'] is set and not empty
-
-    if (isset($_FILES['certificates']['name']) && !empty($_FILES['certificates']['name'])) {
-        // Normalize the file structure when dealing with a single file to mimic multiple files format
-        $fileCount = is_array($_FILES['certificates']['name']) ? count($_FILES['certificates']['name']) : 1;
-        $fileNames = is_array($_FILES['certificates']['name']) ? $_FILES['certificates']['name'] : array($_FILES['certificates']['name']);
-        $tmpNames = is_array($_FILES['certificates']['tmp_name']) ? $_FILES['certificates']['tmp_name'] : array($_FILES['certificates']['tmp_name']);
-        $errorCodes = is_array($_FILES['certificates']['error']) ? $_FILES['certificates']['error'] : array($_FILES['certificates']['error']);
-
-        for ($i = 0; $i < $fileCount; $i++) {
-            if ($errorCodes[$i] === UPLOAD_ERR_OK) {
-                // Perform your file validation and upload logic here
-                $tmp_name = $tmpNames[$i];
-                $name = basename($fileNames[$i]);
-                $destination = $uploadDir . $name;
-                if (move_uploaded_file($tmp_name, $destination)) {
-                    $uploadedFiles[] = $name; // Collect uploaded file names
+            for ($i = 0; $i < $fileCount; $i++) {
+                if ($errorCodes[$i] === UPLOAD_ERR_OK) {
+                    $tmp_name = $tmpNames[$i];
+                    $name = basename($fileNames[$i]);
+                    $destination = $uploadDir . $name;
+                    if (move_uploaded_file($tmp_name, $destination)) {
+                        $uploadedFiles[] = $name;
+                    } else {
+                        echo "<p>Error: Could not upload file $name.</p>";
+                    }
                 } else {
-                    echo "<p>Error: Could not upload file $name.</p>";
+                    echo "<p>Error: Upload error for file.</p>";
                 }
-            } else {
-                echo "<p>Error: Upload error for file.</p>";
+            }
+            $uploadedFilesString = implode(',', $uploadedFiles);
+        }
+
+        // Database insertion
+        if (!empty($fullName) && !empty($emailAddress) && !empty($description) && !empty($gender) && !empty($programmingStackString) && !empty($uploadedFilesString)) {
+            try {
+                $stmt = $pdo->prepare("INSERT INTO survey_responses (full_name, email_address, description, gender, programming_stack, certificates, date_responded) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+                $stmt->execute([$fullName, $emailAddress, $description, $gender, $programmingStackString, $uploadedFilesString]);
+                echo "<p>Survey response has been recorded.</p>";
+            } catch (PDOException $e) {
+                echo "Database error: " . $e->getMessage();
             }
         }
-
-        $uploadedFilesString = implode(',', $uploadedFiles);
     }
-
-    // Database insertion
-    if (!empty($uploadedFiles)) {
-        try {
-            $stmt = $pdo->prepare("INSERT INTO survey_responses (full_name, email_address, description, gender, programming_stack, certificates, date_responded) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-            $stmt->execute([$fullName, $emailAddress, $description, $gender, $programmingStackString, $uploadedFilesString]);
-            echo "<p>Survey response has been recorded.</p>";
-        } catch (PDOException $e) {
-            echo "Database error: " . $e->getMessage();
-        }
-    }
-  }
 }
 ?>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
