@@ -1,34 +1,47 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-include 'connect.php';
-
-$recordsPerPage = 10; 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; 
-$offset = ($page - 1) * $recordsPerPage; 
-
-try {
-
-    $totalRows = $pdo->query('SELECT COUNT(*) FROM survey_responses')->fetchColumn();
-    $totalPages = ceil($totalRows / $recordsPerPage); 
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$recordsPerPage = 10;
 
 
-    $stmt = $pdo->prepare('SELECT full_name, email_address, description, gender, programming_stack, certificates, date_responded FROM survey_responses LIMIT :limit OFFSET :offset');
-    $stmt->bindParam(':limit', $recordsPerPage, PDO::PARAM_INT);
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $stmt->execute();
+$upload_dir_uri = 'http://localhost/simple_survey_client/uploads/';
+$apiUrl = 'http://localhost/simple_survey_client/api.php?page=' . $page . '&records_per_page=' . $recordsPerPage;
+$ch = curl_init($apiUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 
-    $responses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (\PDOException $e) {
-    echo "Error: " . $e->getMessage();
-    exit;
+$response = curl_exec($ch);
+$err = curl_error($ch);
+curl_close($ch);
+
+$responses = [];
+$totalPages = 1;
+$totalRecords = 0;
+
+if ($err) {
+    echo "cURL Error #:" . $err;
+} else {
+    $result = json_decode($response, true);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $responses = isset($result['data']) ? $result['data'] : [];
+        $totalPages = isset($result['total_pages']) ? $result['total_pages'] : 1;
+        $currentPage = isset($result['current_page']) ? $result['current_page'] : $page;
+        $totalRecords = isset($result['total_records']) ? $result['total_records'] : count($responses);
+    } else {
+        echo "Error: Invalid JSON response. JSON Error: " . json_last_error_msg();
+        echo "\nRaw Response:\n";
+        var_dump($response);
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Survey Responses</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
     body {
       background: linear-gradient(135deg, #4d3319 0%, #1a1a00 100%); 
@@ -68,7 +81,7 @@ try {
 
     tr:hover {
         background-color:#5C4033;
-        color: #FF0000;
+        color: #FFFFFF;
     }
 
   
@@ -106,10 +119,11 @@ try {
     }
 </style>
 </head>
+<center>
 <body>
-    <div id="surveyResponses">
+    <div id="surveyResponses" style="max-width: 100%; padding: 20px;">
         <h1>Form Response Details</h1>
-        <table>
+        <table style="width: calc(100% - 40px); border-collapse: separate; border-spacing: 0; margin: 20px; background-color: #fff; color: #333; overflow: hidden;">
             <thead>
                 <tr>
                     <th>Full Name</th>
@@ -123,29 +137,43 @@ try {
             </thead>
             <tbody>
                 <?php foreach ($responses as $row): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['full_name']); ?></td>
-                    <td><?= htmlspecialchars($row['email_address']); ?></td>
-                    <td><?= htmlspecialchars($row['description']); ?></td>
-                    <td><?= htmlspecialchars($row['gender']); ?></td>
-                    <td><?= htmlspecialchars($row['programming_stack']); ?></td>
-                    <td>
+                    <tr>
+                        <td><?= htmlspecialchars($row['full_name']); ?></td>
+                        <td><?= htmlspecialchars($row['email_address']); ?></td>
+                        <td><?= htmlspecialchars($row['description']); ?></td>
+                        <td><?= htmlspecialchars($row['gender']); ?></td>
+                        <td><?= htmlspecialchars($row['programming_stack']); ?></td>
+                        <td>
+
                         <?php if (!empty($row['certificates'])): ?>
-                            <?php foreach (explode(',', $row['certificates']) as $certificate): ?>
-                                <a href="path/to/certificate/<?= htmlspecialchars($certificate); ?>" download><?= htmlspecialchars($certificate); ?></a><br>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars($row['date_responded']); ?></td>
-                </tr>
+                                <ul class="list-unstyled">
+                                    <?php foreach (explode(',', $row['certificates']) as $certificate): ?>
+                                        <li>
+                                            <a href="<?= $upload_dir_uri . htmlspecialchars(urlencode($certificate)); ?>" target="_blank" download>
+                                                <?= htmlspecialchars($certificate); ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </td>
+                        <td><?= htmlspecialchars($row['date_responded']); ?></td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <div class="pagination">
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i; ?>"><?= $i; ?></a>
-            <?php endfor; ?>
-        </div>
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+            <ul class="pagination">
+                <?php if ($page > 1): ?>
+                    <li class="page-item"><a class="page-link" href="?page=<?= $page - 1; ?>">Previous</a></li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= $i == $page ? 'active' : ''; ?>"><a class="page-link" href="?page=<?= $i; ?>"><?= $i; ?></a></li>
+                <?php endfor; ?>
+                <?php if ($page < $totalPages): ?>
+                    <li class="page-item"><a class="page-link" href="?page=<?= $page + 1; ?>">Next</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </div>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script

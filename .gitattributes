@@ -1,0 +1,7 @@
+C:/xampp/htdocs/simple_survey_client/file_verification/file_verification.py filter=lfs diff=lfs merge=lfs -text
+C:/xampp/htdocs/simple_survey_client/path/to/uploads" filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+C:/xampp/htdocs/file_verification/member_details.csv filter=lfs diff=lfs merge=lfs -text
+file_verification/member_details.csv filter=lfs diff=lfs merge=lfs -text
+path/to/uploads/Git-2.43.0-64-bit[[:space:]](1).exe filter=lfs diff=lfs merge=lfs -text
+[[:space:]]path/to/uploads/xampp-windows-x64-8.0.30-0-VS16-installer[[:space:]](1).exe filter=lfs diff=lfs merge=lfs -text
