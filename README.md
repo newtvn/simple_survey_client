@@ -1,77 +1,62 @@
-# Simple Survey Application
+# README.md for Simple Survey Client Application
 
 ## Overview
 
-This project comprises a web-based Survey application that allows users to respond to survey questions and view all responses. It is divided into three main components:
+The Simple Survey Client Application is a web-based platform designed to collect survey responses and manage certificate uploads. This repository contains the frontend and backend components necessary to set up the application.
 
-- **Database (`sky_survey_db`)**: A relational database designed to store survey questions and responses.
-- **REST API**: An interface for interacting with the database to fetch questions, submit responses, and view submitted responses.
-- **User Interface**: A web platform providing a user-friendly way to participate in surveys and view responses.
+## Features
+
+- Frontend survey form for user input
+- Backend REST API for processing GET and POST requests
+- File upload handling
+- Pagination of survey responses
+- Asynchronous data submission with JavaScript `fetch` API
 
 ## Getting Started
 
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
 ### Prerequisites
 
-- MySQL
-- Node.js and npm (for the REST API and web client)
-- Git
+- PHP 7.4 or newer
+- MySQL 5.7 or newer
+- Web server like Apache or Nginx
 
-### Setting Up the Database
+### Installing
 
-1. Install MySQL.
-2. Create a database named `sky_survey_db`.
-3. Import the SQL schema located in `database/sql_file.sql` to set up the necessary tables.
+1. Clone the repository to your local machine or download the zip file and extract it in your web server's root directory, e.g., `C:/xampp/htdocs/`.
+2. Configure your web server to point to the `simple_survey_client` directory.
+3. Import the SQL file to create the database schema in MySQL.
+4. Update the database connection settings in the `api.php` file if needed.
 
-### Running the REST API
+### Running the Application
 
-1. Clone the `simple-survey-api` repository.
-2. Navigate to the cloned directory and install dependencies:
-   ```bash
-   npm install
-   ```
-3. Configure your database connection settings in `config/database.js`.
-4. Start the server:
-   ```bash
-   npm start
-   ```
+1. Start your web server and MySQL service.
+2. Open your web browser and navigate to `http://localhost/simple_survey_client/survey_form.php` to access the survey form.
+3. Fill out the form and submit to see the responses being saved and listed.
 
-### Setting Up the Web Client
+## API Endpoints
 
-1. Clone the `simple-survey-client` repository.
-2. Navigate to the client directory and install dependencies:
-   ```bash
-   npm install
-   ```
-3. Adjust the API endpoint settings in `src/config/api.js` to point to your running API server.
-4. Start the web client:
-   ```bash
-   npm start
-   ```
-5. Access the web client at `http://localhost:80` .
+- `GET /api.php`: Fetches a paginated list of survey responses.
+- `POST /api.php`: Accepts survey responses and handles file uploads.
 
-## API Documentation
+## File Structure
 
-Refer to the Postman Collection included in the repository for detailed endpoint documentation. The API supports:
+- `survey_form.php`: Frontend HTML form for submitting survey responses.
+- `api.php`: Backend PHP script that provides REST API endpoints.
+- `uploads/`: Directory for storing uploaded certificate files.
 
-- Fetching a list of survey questions (`GET /api/questions`)
-- Submitting responses to questions (`PUT /api/questions/responses`)
-- Fetching submitted responses, with support for pagination and filtering by email address (`GET /api/questions/responses`)
-- Downloading certificates by ID (`GET /api/questions/responses/certificates/{id}`)
+## Usage
 
-## User Interface
+Use the provided Postman collection to test the API endpoints and ensure they are functioning as expected.
 
-The web client features two main pages:
+## Built With
 
-- **Survey Form**: Allows users to fill out the survey in a stepped format.
-- **Survey Responses**: Displays submitted survey responses with pagination and filtering capabilities.
-
-## Deployment
-
-## Links
-
-- GitHub Repository (API): [simple-survey-api](#)
-- GitHub Repository (Client): [simple-survey-client](#)
+- [Bootstrap](https://getbootstrap.com/) - The web framework used for styling.
+- [PHP](https://www.php.net/) - Server-side scripting language used.
+- [MySQL](https://www.mysql.com/) - Database used to store survey data.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the MIT License - see the `LICENSE.md` file for details.
+
